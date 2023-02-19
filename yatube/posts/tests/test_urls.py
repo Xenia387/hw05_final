@@ -13,6 +13,9 @@ URL_POST_DETAIL = 'posts:post_detail'
 URL_POST_CREATE = 'posts:post_create'
 URL_POST_EDIT = 'posts:post_edit'
 URL_ADD_COMMENT = 'posts:add_comment'
+URL_FOLLOW = 'posts:follow_index'
+URL_PROFILE_FOLLOW = 'posts:profile_follow'
+URL_PROFILE_UNFOLLOW = 'posts:profile_unfollow'
 TEMPLATE_INDEX = 'posts/index.html'
 TEMPLATE_GROUP_LIST = 'posts/group_list.html'
 TEMPLATE_PROFILE = 'posts/profile.html'
@@ -26,6 +29,7 @@ class PostURLTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
+        cls.use2_following = User.objects._create_user(username='auth2')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='group-slug',
@@ -70,6 +74,9 @@ class PostURLTests(TestCase):
         ADDRESS = [
             reverse(URL_POST_CREATE),
             reverse(URL_ADD_COMMENT, kwargs={'post_id': self.post.id}),
+#            reverse(URL_FOLLOW, kwargs={'username': self.post.author},
+#            reverse(URL_PROFILE_FOLLOW, kwargs={'username': self.post.author}),
+#            reverse(URL_PROFILE_FOLLOW, kwargs={'username': self.post.author}),
         ]
         for address in ADDRESS:
             with self.subTest(address=address):

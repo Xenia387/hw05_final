@@ -14,7 +14,12 @@
 {% block content %}
   <div class="container py-3">
     <h1>Последние обновления в ваших подписках</h1>
-    <h5>Вы подписаны на {{ user.follower.count }} пользователей</h5><hr>
+    {% if user.follower.count == 1 %}
+      <h5>Вы подписаны на {{ user.follower.count }} пользователя</h5><hr>
+    {% else %}
+      <h5>Вы подписаны на {{ user.follower.count }} пользователей</h5><hr>
+    {% endif %}
+
     {% include 'includes/switcher.html' %}
       {% for post in page_obj %}
         {% include 'includes/post.html' %}
@@ -28,6 +33,7 @@
             {% endif %}
           </ul>
       {% endfor %}
+
   </div> 
   {% include 'includes/paginator.html' %} 
 {% endblock %}

@@ -21,9 +21,17 @@
 #        self.guest_client = Client()
 #    
 #    def test_cache_clear(self):
-#        respone = self.guest_client.get(reverse(URL_INDEX))
+#        respone_1 = self.guest_client.get(reverse(URL_INDEX))
 #        post = Post.objects.create(
 #            author=self.user,
 #            group=self.group,
-#            text='Тестовый пост',
+#            text='Тестовый пост номер 1',
 #        )
+        cache.clear()
+        response_2 = self.guest_client(reverse(URL_INDEX))
+        post = Post.objects.create(
+#            author=self.user,
+#            group=self.group,
+#            text='Тестовый пост номер 2',
+#        )
+        self.assertNotEqual(response_1, response_2)

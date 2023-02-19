@@ -1,9 +1,10 @@
 from django.core.cache import cache
-from django.test import Client, TestCase, SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase
 from django.urls import reverse
 
-from posts.forms import CommentForm, PostForm
-from posts.models import Comment, Group, Post, User
+from posts.forms import PostForm
+from posts.models import Comment, Group, Follow, Post, User
 from posts.utils import POSTS_NUMBER
 
 LIST_OF_TEST_POSTS = 13
@@ -155,7 +156,7 @@ class CommentViewsTest(TestCase):
         self.author_comment_client.force_login(self.user_author_comment)
 
     def test_created_post_added_correctly(self):
-        """Пост при создании добавлен корректно"""
+        """Комментарий при создании добавлен корректно"""
         comment = Comment.objects.create(
             text='Созданный комментарий',
             author=self.user_author_comment,
@@ -218,3 +219,67 @@ class PaginatorViewsTest(TestCase):
                 len(response.context['page_obj']),
                 (LIST_OF_TEST_POSTS - POSTS_NUMBER)
             )
+
+
+class CacheTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='auth')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            slug='group-slug',
+            description='Тестовое описание',
+        )
+
+    def setUp(self):
+        self.guest_client = Client()
+
+    def test_cache_clear(self):
+        response_1 = self.guest_client.get(reverse(URL_INDEX))
+        post_1 = Post.objects.create(
+            author=self.user,
+            group=self.group,
+            text='Тестовый пост номер 1',
+        )
+        cache.clear()
+        response_2 = self.guest_client(reverse(URL_INDEX))
+        post_2 = Post.objects.create(
+            author=self.user,
+            group=self.group,
+            text='Тестовый пост номер 2',
+        )
+        self.assertNotEqual(response_1, response_2)
+
+
+class FollowTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_following = User.objects.create_user(username='auth2')
+        cls.user = User.objects.create_user(username='auth')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            slug='group-slug',
+            description='Тестовое описание',
+        )
+        cls.post = Post.objects.create(
+            author=cls.user,
+            group=cls.group,
+            text='Тестовый пост',
+        )
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.author_post_client = Client()
+        self.author_post_client.force_login(self.user_author_post)
+
+    def test_follow_index_correct_context(self):
+        """Шаблон profile_index сорфмирован с правильным контекстом"""
+        response = self.authorized_client.get(
+            reverse(URL_PROFILE, kwargs={'username': self.post.author})
+        )
+        first_object = response.context['page_obj'][0]
+        self.assertEqual(first_object.text, 'Тестовый пост')
+        self.assertEqual(first_object.author.username, self.user.username)
+        self.assertEqual(first_object.group.title, self.group.title)
