@@ -1,0 +1,29 @@
+# from django.core.cache import cache
+# from django.test import Client, TestCase
+
+# from posts.models import Comment, Group, Post, User
+
+# URL_INDEX = 'posts:index'
+
+
+# class CacheTests(TestCase):
+#    @classmethod
+#    def setUpClass(cls):
+#        super().setUpClass()
+#        cls.user = User.objects.create_user(username='auth')
+#        cls.group = Group.objects.create(
+#            title='Тестовая группа',
+#            slug='group-slug',
+#            description='Тестовое описание',
+#        cls.post = 
+
+#    def setUp(self):
+#        self.guest_client = Client()
+#    
+#    def test_cache_clear(self):
+#        respone = self.guest_client.get(reverse(URL_INDEX))
+#        post = Post.objects.create(
+#            author=self.user,
+#            group=self.group,
+#            text='Тестовый пост',
+#        )

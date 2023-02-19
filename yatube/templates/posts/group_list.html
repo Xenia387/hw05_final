@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block style %}
+  #slug_style {
+    border-color: #8FA2CA;
+    border-width: thin;
+    border-style: dotted;
+    border-radius: 0 0 10px 10px;
+    padding: 10px;
+  }
+{% endblock %}
+{% block title %} Записи сообщества {{ group.title }} {% endblock %}
+{% block content %}
+  <div class="container py-3">
+      <h1>{{ group.title }}</h1>
+      <p>
+        {{ group.description|linebreaksbr }}
+      </p>
+      <p>
+        Постов в группе: {{ group.posts.count }}
+      </p><hr>
+      {% for post in page_obj %}
+        {% include 'includes/post.html' %}
+        <ul id="slug_style"> 
+            <a href="{% url 'posts:profile' post.author %}">
+            Все посты пользователя</a>
+        </ul>
+      {% endfor %}
+  </div>
+  {% include 'includes/paginator.html' %}
+{% endblock %}

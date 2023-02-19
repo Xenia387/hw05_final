@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block style %}
+  #slug_style {
+    border-color: #8FA2CA;
+    border-width: thin;
+    border-style: dotted;
+    border-radius: 0 0 10px 10px;
+    padding: 10px;
+  }
+{% endblock %}
+{% block title %} Профайл пользователя {{ author.get_full_name }} {% endblock %}
+{% block content %}
+  <div class="container py-3">
+    
+    <div class="mb-5">
+      <h1>Пользователь {{ author.get_full_name }}</h1>
+      <h5>Всего постов: {{ author.posts.count }}</h5><hr>
+      {% if following %}
+        <a class="btn btn-lg btn-light"
+        href="{% url 'posts:profile_unfollow' author.username %}" role="button">
+        Отписаться</a>
+      {% else %}
+        <a class="btn btn-lg btn-primary"
+        href="{% url 'posts:profile_follow' author.username %}" role="button">
+        Подписаться</a>
+      {% endif %}
+    </div>
+
+    {% for post in page_obj %}
+      <div>
+        {% include 'includes/post.html' %}
+          <ul id="slug_style">  
+            {% if post.group %}
+              <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>
+            {% endif %}
+            {% if not forloop.last %}
+            {% endif %}
+          </ul>
+      </div><br>
+    {% endfor %}
+
+  </div>
+{% include 'includes/paginator.html' %}
+{% endblock %}
