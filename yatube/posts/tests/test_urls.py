@@ -222,5 +222,5 @@ class FollowURLTests(TestCase):
         }
         for address, template in template_url_names.items():
             with self.subTest(address=address):
-                response = self.guest_client.get(address)
+                response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)

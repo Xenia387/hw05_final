@@ -162,6 +162,9 @@ class PaginatorViewsTest(TestCase):
             )
         Post.objects.bulk_create(cls.empty_list)
 
+        class setUp():
+            cache.clear()
+
     def test_first_page_contains_ten_posts(self):
         pages = [
             reverse(URL_INDEX),
