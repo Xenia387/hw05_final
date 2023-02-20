@@ -8,7 +8,7 @@
     padding: 10px;
   }
 {% endblock %}
-{% block title %} Профайл пользователя {{ author.get_full_name }} {% endblock %}
+{% block title %} Профиль пользователя {{ author.get_full_name }} {% endblock %}
 {% block content %}
   <div class="container py-3">
     
@@ -17,15 +17,15 @@
       <h5>Всего постов: {{ author.posts.count }}</h5><hr>
       {% if cannot_follow %}
       {% else %}
-      {% if following %}
-        <a class="btn btn-lg btn-light"
-        href="{% url 'posts:profile_unfollow' author.username %}" role="button">
-        Отписаться</a>
-      {% else %}
-        <a class="btn btn-lg btn-primary"
-        href="{% url 'posts:profile_follow' author.username %}" role="button">
-        Подписаться</a>
-      {% endif %}
+        {% if following %}
+          <a class="btn btn-lg btn-light"
+          href="{% url 'posts:profile_unfollow' author.username %}" role="button">
+          Отписаться</a>
+        {% else %}
+          <a class="btn btn-lg btn-primary"
+          href="{% url 'posts:profile_follow' author.username %}" role="button">
+          Подписаться</a>
+        {% endif %}
       {% endif %}
     </div>
 
@@ -43,5 +43,5 @@
     {% endfor %}
 
   </div>
-{% include 'includes/paginator.html' %}
+  {% include 'includes/paginator.html' %}
 {% endblock %}

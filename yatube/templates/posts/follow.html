@@ -13,6 +13,7 @@
 {% cache 20 index_page %}
 {% block content %}
   <div class="container py-3">
+
     <h1>Последние обновления в ваших подписках</h1>
     {% if user.follower.count == 1 %}
       <h5>Вы подписаны на {{ user.follower.count }} пользователя</h5><hr>

@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from posts.models import ADMIN_NUMBER_OF_CHARACTERS, Group, Post, User
+from posts.models import ADMIN_NUMBER_OF_CHARACTERS, Comment, Follow, Group, Post, User
 
 
 class PostModelTest(TestCase):
@@ -24,21 +24,13 @@ class PostModelTest(TestCase):
         expected_text = post.text[:ADMIN_NUMBER_OF_CHARACTERS]
         group = PostModelTest.group
         expected_title = group.title
-        tuple = (
+        post_fields = (
             (post, expected_text),
             (group, expected_title),
         )
-        for object, expected in tuple:
+        for object, expected in post_fields:
             with self.subTest(object=object):
                 self.assertEqual(expected, str(object))
-
-    def test_1(self):
-        post = PostModelTest.post
-        expected_object_text = post.text[:ADMIN_NUMBER_OF_CHARACTERS]
-        self.assertEqual(expected_object_text, str(post))
-        group = PostModelTest.group
-        expected_object_name = group.title
-        self.assertEqual(expected_object_name, str(group))
 
     def test_verbose_name(self):
         group = PostModelTest.group

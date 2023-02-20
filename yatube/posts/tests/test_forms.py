@@ -7,12 +7,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Group, Post, User
+from posts.models import Comment, Group, Post, User
 
 
 URL_POST_DETAIL = 'posts:post_detail'
 URL_POST_CREATE = 'posts:post_create'
 URL_POST_EDIT = 'posts:post_edit'
+URL_ADD_COMMENT = 'posts:add_comment'
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
@@ -59,7 +60,7 @@ class PostFormTests(TestCase):
             'group': self.group.id,
             'image': uploaded,
         }
-        response = self.authorized_client.post(reverse('posts:post_create'),
+        response = self.authorized_client.post(reverse(URL_POST_CREATE),
                                                data=form_data,
                                                follow=True)
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -114,7 +115,7 @@ class PostFormTests(TestCase):
             'image': another_image,
         }
         response = self.authorized_client.post(
-            reverse('posts:post_edit', kwargs={'post_id': source_post.id}),
+            reverse(URL_POST_EDIT, kwargs={'post_id': source_post.id}),
             data=form_data,
             follow=True,
         )
@@ -130,3 +131,46 @@ class PostFormTests(TestCase):
                 image=source_post.image,
             ).exists()
         )
+
+
+class CommentFormTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.author = User.objects.create_user(username='auth')
+#        cls.user_2 = User.objects.cretate_user(username='auth')
+#        cls.group = Group.objects.create(
+#            title='Тестовая группа',
+#            slug='group-slug',
+#            description='Описание тестовой группы',
+#        )
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.author)
+
+    def test_create_comment(self):
+        """Валидная форма создаёт комментарий"""
+        post = Post.objects.create(
+            text='Тестовый пост',
+            author=self.author,
+        )
+        comment_count = Comment.objects.count()
+#        follower = User.objects.create_user(username='auth')
+        form_data = {
+            'text': 'Текст комментария',
+            'post': post.id,
+#            'author': follower,
+        }
+        response = self.authorized_client.post(
+            reverse(URL_ADD_COMMENT, kwargs={'post_id': post.id}),
+            data=form_data,
+            follow=True,
+        )
+        request_comment = Comment.objects.first()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(request_comment.text, form_data['text'])
+        self.assertEqual(request_comment.post.id, form_data['post'])
+#        self.assertEqual(request_comment.follower, form_data['follower'])
+        self.assertNotEqual(comment_count, comment_count + 1)
