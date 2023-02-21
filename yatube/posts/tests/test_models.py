@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from posts.models import ADMIN_NUMBER_OF_CHARACTERS, Comment, Follow, Group, Post, User
+from posts.models import ADMIN_NUMBER_OF_CHARACTERS, Group, Post, User
 
 
 class PostModelTest(TestCase):
@@ -42,7 +42,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    group._meta.get_field(field).verbose_name, expected_value)
+                    group._meta.get_field(field).verbose_name, expected_value
+                )
 
         post = PostModelTest.post
         field_verboses = {
@@ -54,7 +55,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    post._meta.get_field(field).verbose_name, expected_value)
+                    post._meta.get_field(field).verbose_name, expected_value
+                )
 
     def test_help_text(self):
         """help_text в полях совпадает с ожидаемым."""
@@ -66,7 +68,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_help_texts.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    group._meta.get_field(field).help_text, expected_value)
+                    group._meta.get_field(field).help_text, expected_value
+                )
 
         post = PostModelTest.post
         field_help_texts = {

@@ -145,7 +145,11 @@ def profile_follow(request, username):
                 user=request.user,
                 author=author,
             )
-        return redirect('posts:profile', username=username)
+            context = {
+                'follow': follow,
+                'username': username,
+            }
+        return redirect('posts:profile', context)
 
 
 @login_required

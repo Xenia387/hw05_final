@@ -207,14 +207,14 @@ class CacheTests(TestCase):
 
     def test_cache_clear(self):
         response_1 = self.guest_client.get(reverse(URL_INDEX))
-        post_1 = Post.objects.create(
+        Post.objects.create(
             author=self.user,
             group=self.group,
             text='Тестовый пост номер 1',
         )
         cache.clear()
         response_2 = self.guest_client.get(reverse(URL_INDEX))
-        post_2 = Post.objects.create(
+        Post.objects.create(
             author=self.user,
             group=self.group,
             text='Тестовый пост номер 2',
@@ -302,7 +302,7 @@ class FollowTest(TestCase):
     def test_user_can_follow_author(self):
         """Авторизованный пользователь может подписаться на автора
         и отписаться от него"""
-        follow = Follow.objects.create(
+        Follow.objects.create(
             user=self.user,
             author=self.author,
         )

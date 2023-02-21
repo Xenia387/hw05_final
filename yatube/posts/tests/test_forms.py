@@ -161,7 +161,6 @@ class CommentFormTests(TestCase):
         form_data = {
             'text': 'Текст комментария',
             'post': post.id,
-#            'author': follower,
         }
         response = self.authorized_client.post(
             reverse(URL_ADD_COMMENT, kwargs={'post_id': post.id}),
