@@ -9,6 +9,7 @@ from posts.utils import POSTS_NUMBER
 
 LIST_OF_TEST_POSTS = 13
 URL_INDEX = 'posts:index'
+URL_FOLLOW_INDEX = 'posts:follow_index'
 URL_GROUP_LIST = 'posts:group_list'
 URL_PROFILE = 'posts:profile'
 URL_POST_DETAIL = 'posts:post_detail'
@@ -140,36 +141,37 @@ class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='paginator_auth')
-        cls.group = Group.objects.create(
+        cls.user_pag = User.objects.create_user(username='paginator_auth')
+        cls.group_pag = Group.objects.create(
             title='Тестовая группа',
             slug='group-slug',
             description='Тестовое описание',
         )
-        cls.post = Post.objects.create(
-            author=cls.user,
-            group=cls.group,
+        cls.post_pag = Post.objects.create(
+            author=cls.user_pag,
+            group=cls.group_pag,
             text='Тестовый пост',
         )
         cls.empty_list = []
         for i in range((LIST_OF_TEST_POSTS - 1)):
             cls.empty_list.append(
                 Post(
-                    author=cls.user,
-                    group=cls.group,
+                    author=cls.user_pag,
+                    group=cls.group_pag,
                     text=f'Текст тестового поста номер {i}'
                 )
             )
         Post.objects.bulk_create(cls.empty_list)
 
-        class setUp():
-            cache.clear()
+    def setUp(self):
+        self.guest_client = Client()
+        cache.clear()
 
     def test_first_page_contains_ten_posts(self):
         pages = [
             reverse(URL_INDEX),
-            reverse(URL_PROFILE, kwargs={'username': self.post.author}),
-            reverse(URL_GROUP_LIST, kwargs={'slug': self.group.slug}),
+            reverse(URL_PROFILE, kwargs={'username': self.post_pag.author}),
+            reverse(URL_GROUP_LIST, kwargs={'slug': self.group_pag.slug}),
         ]
         for i in pages:
             response = self.client.get(i)
@@ -178,8 +180,8 @@ class PaginatorViewsTest(TestCase):
     def test_second_page_contains_three_posts(self):
         pages = [
             reverse(URL_INDEX),
-            reverse(URL_PROFILE, kwargs={'username': self.post.author}),
-            reverse(URL_GROUP_LIST, kwargs={'slug': self.group.slug}),
+            reverse(URL_PROFILE, kwargs={'username': self.post_pag.author}),
+            reverse(URL_GROUP_LIST, kwargs={'slug': self.group_pag.slug}),
         ]
         for i in pages:
             response = self.client.get(i + '?page=2')
@@ -225,8 +227,12 @@ class CommentViewsTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='comment_auth_1')
-        cls.user_author_post = User.objects.create_user(username='comment_auth_2')
-        cls.user_author_comment = User.objects.create_user(username='comment_auth_3')
+        cls.user_author_post = User.objects.create_user(
+            username='comment_auth_2'
+        )
+        cls.user_author_comment = User.objects.create_user(
+            username='comment_auth_3'
+        )
         cls.post = Post.objects.create(
             author=cls.user_author_post,
             text='Тестовый пост',
@@ -259,19 +265,26 @@ class FollowTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.following = User.objects.create_user(username='auth2')
-        cls.follower = User.objects.create_user(username='auth')
+        cls.user = User.objects.create_user(username='user')
+        cls.author = User.objects.create_user(username='author')
         cls.post_following = Post.objects.create(
-            author=cls.following,
+            author=cls.author,
+            text='Тестовый пост',
+        )
+        cls.author_2 = User.objects.create_user(username='author_2')
+        cls.post_not_following = Post.objects.create(
+            author=cls.author_2,
             text='Тестовый пост',
         )
 
     def setUp(self):
         self.guest_client = Client()
         self.author_post_client = Client()
-        self.author_post_client.force_login(self.following)
+        self.author_post_client.force_login(self.author)
         self.authorized_client = Client()
-        self.authorized_client.force_login(self.follower)
+        self.authorized_client.force_login(self.user)
+        self.author_2_post_client = Client()
+        self.author_2_post_client.force_login(self.author_2)
 
     def test_follow_index_correct_context(self):
         """Шаблон follow_index сорфмирован с правильным контекстом"""
@@ -283,5 +296,57 @@ class FollowTest(TestCase):
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, 'Тестовый пост')
         self.assertEqual(
-            first_object.author.username, self.following.username
+            first_object.author.username, self.author.username
+        )
+
+    def test_user_can_follow_author(self):
+        """Авторизованный пользователь может подписаться на автора
+        и отписаться от него"""
+        follow = Follow.objects.create(
+            user=self.user,
+            author=self.author,
+        )
+        self.assertTrue(
+            Follow.objects.filter(user=self.user, author=self.author)
+        )
+        unfollow = Follow.objects.filter(
+            user=self.user,
+            author=self.author,
+        )
+        unfollow.delete()
+        self.assertFalse(
+            Follow.objects.filter(user=self.user, author=self.author)
+        )
+
+    def test_follow_index(self):
+        Follow.objects.create(
+            user=self.user,
+            author=self.author,
+        )
+        post_of_fav_author = Post.objects.create(
+            text='Текст тестового поста',
+            author=self.author,
+        )
+        follow = Follow.objects.create(
+            user=self.user,
+            author=self.author_2,
+        )
+        follow.delete()
+        post_of_unfav_author = Post.objects.create(
+            text='Текст тестового поста',
+            author=self.author_2,
+        )
+        response_follow_index = self.authorized_client.get(
+            reverse(URL_FOLLOW_INDEX)
+        )
+        follow_index = response_follow_index.context['page_obj']
+        self.assertIn(
+            post_of_fav_author,
+            follow_index,
+            'посты читаемого автора не находятся на странице'
+        )
+        self.assertNotIn(
+            post_of_unfav_author,
+            follow_index,
+            'на странице есть посты от нечитаемых авторов'
         )
