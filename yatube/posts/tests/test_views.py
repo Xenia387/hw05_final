@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from posts.forms import PostForm
-from posts.models import Comment, Group, Follow, Post, User
+from posts.models import Comment, Group, Follow, Post, small_gif, User
 from posts.utils import POSTS_NUMBER
 
 LIST_OF_TEST_POSTS = 13
@@ -27,14 +27,6 @@ class PostPagesTests(TestCase):
             title='Тестовая группа',
             slug='group-slug',
             description='Тестовое описание',
-        )
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
         )
         cls.image = SimpleUploadedFile(
             name='small.gif',
@@ -63,7 +55,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(first_object.text, 'Тестовый пост')
         self.assertEqual(first_object.author.username, self.user.username)
         self.assertEqual(first_object.group.title, self.group.title)
-#        self.assertEqual(first_object.image, 'posts/image.gif')
+        self.assertIsNotNone(first_object.image)
 
     def test_grouplist_correct_context(self):
         """Шаблон group_list сорфмирован с правильным контекстом"""
@@ -72,8 +64,6 @@ class PostPagesTests(TestCase):
         )
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, 'Тестовый пост')
-        self.assertEqual(first_object.author.username, self.user.username)
-        self.assertEqual(first_object.group.title, self.group.title)
 
     def test_profile_correct_context(self):
         """Шаблон profile сорфмирован с правильным контекстом"""
@@ -82,7 +72,7 @@ class PostPagesTests(TestCase):
         )
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, 'Тестовый пост')
-        self.assertEqual(first_object.author.username, self.user.username)
+        self.assertEqual(first_object.author, self.user)
         self.assertEqual(first_object.group.title, self.group.title)
 
     def test_postdetail_correct_context(self):

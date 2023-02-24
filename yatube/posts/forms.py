@@ -27,3 +27,10 @@ class CommentForm(forms.ModelForm):
                 'maxlength': '300',
             }),
         }
+
+    def clean_text(self):
+        data = self.cleaned_data['text']
+        if not data:
+            raise data.ValidationError('Поле комментария должно быть '
+                                       'заполнено')
+        return data

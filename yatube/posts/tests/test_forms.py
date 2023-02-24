@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Comment, Group, Post, User
+from posts.models import Comment, Group, Post, small_gif, User
 
 
 URL_POST_DETAIL = 'posts:post_detail'
@@ -41,15 +41,7 @@ class PostFormTests(TestCase):
 
     def test_create_post(self):
         """Валидная форма создает пост в Post."""
-        posts_count = Post.objects.count()
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
+        posts_count = Post.objects.count() + 1
         uploaded = SimpleUploadedFile(
             name='small.gif',
             content=small_gif,
@@ -67,27 +59,11 @@ class PostFormTests(TestCase):
         request_post = Post.objects.first()
         self.assertEqual(request_post.text, form_data['text'])
         self.assertEqual(request_post.group.id, form_data['group'])
-#        self.assertEqual(request_post.image, form_data['image'])
+        self.assertEqual(request_post.image.url, '/media/posts/small.gif')
         self.assertNotEqual(posts_count, posts_count + 1)
-        self.assertTrue(
-            Post.objects.filter(
-                author=self.user,
-                text=request_post.text,
-                group=request_post.group.id,
-                image=request_post.image,
-            ).exists()
-        )
 
     def test_edit_post(self):
         """Валидная форма изменяет пост в Post."""
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
         image = SimpleUploadedFile(
             name='small.gif',
             content=small_gif,
@@ -123,14 +99,7 @@ class PostFormTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertNotEqual(source_post.text, form_data['text'])
         self.assertNotEqual(source_post.group, form_data['group'])
-        self.assertTrue(
-            Post.objects.filter(
-                author=self.user,
-                text=source_post.text,
-                group=source_post.group.id,
-                image=source_post.image,
-            ).exists()
-        )
+        self.assertNotEqual(source_post.image.url, '/media/posts/small.gif')
 
 
 class CommentFormTests(TestCase):

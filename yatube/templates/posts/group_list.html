@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% comment %}
 {% block style %}
   #slug_style {
     border-color: #8FA2CA;
@@ -8,6 +9,7 @@
     padding: 10px;
   }
 {% endblock %}
+{% endcomment %}
 {% block title %} Записи сообщества {{ group.title }} {% endblock %}
 {% block content %}
   <div class="container py-3">
@@ -19,11 +21,13 @@
         Постов в группе: {{ group.posts.count }}
       </p><hr>
       {% for post in page_obj %}
-        {% include 'includes/post.html' %}
+        {% include 'includes/post.html' with show_profile_link=True %}
+        {% comment %}
         <ul id="slug_style"> 
             <a href="{% url 'posts:profile' post.author %}">
             Все посты пользователя</a>
         </ul>
+        {% endcomment %}
       {% endfor %}
   </div>
   {% include 'includes/paginator.html' %}

@@ -2,6 +2,7 @@ from django.core.paginator import Paginator
 
 
 POSTS_NUMBER: int = 10
+# posts_per_page = (10)
 
 
 def paginat(request, post):

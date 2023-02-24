@@ -21,18 +21,9 @@
       <h5>Вы подписаны на {{ user.follower.count }} пользователей</h5><hr>
     {% endif %}
 
-    {% include 'includes/switcher.html' %}
+    {% include 'includes/switcher.html' with follow=True %}
       {% for post in page_obj %}
-        {% include 'includes/post.html' %}
-          <ul id="slug_style">
-            <a href="{% url 'posts:profile' post.author %}">
-            Все посты пользователя</a><br>
-            {% if post.group %}
-              <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>
-            {% endif %}<br>
-            {% if not forloop.last %}
-            {% endif %}
-          </ul>
+        {% include 'includes/post.html' with show_profile_link=True show_group_link=True %}
       {% endfor %}
 
   </div> 

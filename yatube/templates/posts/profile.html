@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% comment %}
 {% block style %}
   #slug_style {
     border-color: #8FA2CA;
@@ -8,6 +9,7 @@
     padding: 10px;
   }
 {% endblock %}
+{% endcomment %}
 {% block title %} Профиль пользователя {{ author.get_full_name }} {% endblock %}
 {% block content %}
   <div class="container py-3">
@@ -31,14 +33,7 @@
 
     {% for post in page_obj %}
       <div>
-        {% include 'includes/post.html' %}
-          <ul id="slug_style">  
-            {% if post.group %}
-              <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>
-            {% endif %}
-            {% if not forloop.last %}
-            {% endif %}
-          </ul>
+        {% include 'includes/post.html' with show_group_link=True %}
       </div><br>
     {% endfor %}
 
