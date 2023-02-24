@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from posts.models import ADMIN_NUMBER_OF_CHARACTERS, Comment, Follow, Group, Post, User
+from posts.models import (
+    ADMIN_NUMBER_OF_CHARACTERS, Comment, Follow, Group, Post, User
+)
 
 
 class PostModelTest(TestCase):
