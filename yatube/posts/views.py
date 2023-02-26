@@ -115,7 +115,7 @@ def follow_index(request):
     context = {
         'page_obj': page_obj,
         'favorite_post_list': favorite_post_list,
-        'follow': follow,
+        'follow': True,
     }
     return render(request, 'posts/follow.html', context)
 

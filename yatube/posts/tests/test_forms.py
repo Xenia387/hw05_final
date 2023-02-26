@@ -11,8 +11,6 @@ from posts.models import Comment, Group, Post, User
 
 
 IMAGE_PATH = '/media/posts/small.gif'
-IMAGE_NAME = 
-IMAGE_ANOTHER_NAME = 
 URL_POST_DETAIL = 'posts:post_detail'
 URL_POST_CREATE = 'posts:post_create'
 URL_POST_EDIT = 'posts:post_edit'
