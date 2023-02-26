@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from posts.forms import PostForm
-from posts.models import Comment, Group, Follow, Post, small_gif, User
+from posts.models import Comment, Group, Follow, Post, User
 from posts.utils import POSTS_NUMBER
 
 LIST_OF_TEST_POSTS = 13
@@ -16,6 +16,14 @@ URL_POST_DETAIL = 'posts:post_detail'
 URL_POST_CREATE = 'posts:post_create'
 URL_POST_EDIT = 'posts:post_edit'
 URL_ADD_COMMENT = 'posts:add_comment'
+small_gif = (
+    b'\x47\x49\x46\x38\x39\x61\x02\x00'
+    b'\x01\x00\x80\x00\x00\x00\x00\x00'
+    b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+    b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+    b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+    b'\x0A\x00\x3B'
+)
 
 
 class PostPagesTests(TestCase):

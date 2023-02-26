@@ -7,14 +7,25 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from posts.models import Comment, Group, Post, small_gif, User
+from posts.models import Comment, Group, Post, User
 
 
+IMAGE_PATH = '/media/posts/small.gif'
+IMAGE_NAME = 
+IMAGE_ANOTHER_NAME = 
 URL_POST_DETAIL = 'posts:post_detail'
 URL_POST_CREATE = 'posts:post_create'
 URL_POST_EDIT = 'posts:post_edit'
 URL_ADD_COMMENT = 'posts:add_comment'
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
+small_gif = (
+    b'\x47\x49\x46\x38\x39\x61\x02\x00'
+    b'\x01\x00\x80\x00\x00\x00\x00\x00'
+    b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+    b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+    b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+    b'\x0A\x00\x3B'
+)
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -41,7 +52,7 @@ class PostFormTests(TestCase):
 
     def test_create_post(self):
         """Валидная форма создает пост в Post."""
-        posts_count = Post.objects.count() + 1
+        posts_count = Post.objects.count()
         uploaded = SimpleUploadedFile(
             name='small.gif',
             content=small_gif,
@@ -99,7 +110,7 @@ class PostFormTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertNotEqual(source_post.text, form_data['text'])
         self.assertNotEqual(source_post.group, form_data['group'])
-        self.assertNotEqual(source_post.image.url, '/media/posts/small.gif')
+        self.assertNotEqual(source_post.image.url, IMAGE_PATH)
 
 
 class CommentFormTests(TestCase):
@@ -107,12 +118,6 @@ class CommentFormTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.author = User.objects.create_user(username='auth')
-#        cls.user_2 = User.objects.cretate_user(username='auth')
-#        cls.group = Group.objects.create(
-#            title='Тестовая группа',
-#            slug='group-slug',
-#            description='Описание тестовой группы',
-#        )
 
     def setUp(self):
         self.guest_client = Client()
@@ -126,7 +131,6 @@ class CommentFormTests(TestCase):
             author=self.author,
         )
         comment_count = Comment.objects.count()
-#        follower = User.objects.create_user(username='auth')
         form_data = {
             'text': 'Текст комментария',
             'post': post.id,
@@ -140,5 +144,4 @@ class CommentFormTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(request_comment.text, form_data['text'])
         self.assertEqual(request_comment.post.id, form_data['post'])
-#        self.assertEqual(request_comment.follower, form_data['follower'])
         self.assertNotEqual(comment_count, comment_count + 1)

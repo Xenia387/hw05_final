@@ -13,7 +13,6 @@ def index(request):
     page_obj = paginat(request, post_list)
     context = {
         'page_obj': page_obj,
-        'index': True,
     }
     return render(request, 'posts/index.html', context)
     # тут висела надпись "исправить" но что именно не было написано
@@ -116,7 +115,7 @@ def follow_index(request):
     context = {
         'page_obj': page_obj,
         'favorite_post_list': favorite_post_list,
-        'follow': True,
+        'follow': follow,
     }
     return render(request, 'posts/follow.html', context)
 
@@ -127,18 +126,11 @@ def profile_follow(request, username):
     if author == request.user:
         return redirect('posts:profile', username=username)
     else:
-        if Follow.objects.filter(user=request.user, author=author):
-            return redirect('posts:profile', username=username)
-        else:
-            follow = Follow.objects.create(
-                user=request.user,
-                author=author,
-            )
-        context = {
-            'follow': follow,
-            'username': username,
-        }
-        return redirect('posts:profile', context)
+        follow, created = Follow.objects.get_or_create(
+            user=request.user,
+            author=author,
+        )
+        return redirect('posts:profile', username=username)
 
 
 @login_required
