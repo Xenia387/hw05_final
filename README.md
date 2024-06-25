@@ -1,3 +1,76 @@
-# hw05_final
+# Yatube
+Yatube - это социальная сеть для публикации постов
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+# Возможности проекта
+
+Авторизованные пользователи могут:
+- публиковать, редактировать и удалять посты
+- оставлять комменатрии к постам других пользователей
+- подписываться на пользователей и отписываться от них, смотреть их профили
+- смотреть посты в тематических группах
+- просматривать главную страницу с постами пользователей, на которых подписан текущий пользователь
+- просматривать главную страницу со всеми опубликованным на сайте постами
+
+Неавторизованные пользователи могут:
+- просматривать посты, профили пользователей, тематические группы, главную страницу со всеми опубликованным на сайте постами
+
+Админы могут:
+- все вышеперечисленные действия аторизованных пользователей
+- создавать тематические группы для публикации постов
+
+# Технологии
+- Python
+- Django==3.2.16
+- pytest==6.2.4
+- pytest-pythonpath==0.7.3
+- pytest-django==4.4.0
+- djangorestframework==3.12.4
+- djangorestframework-simplejwt==4.7.2
+- Pillow==9.3.0
+- PyJWT==2.1.0
+- requests==2.26.0
+
+# Запуск проекта
+
+- Клонируйте репозиторий с проектом на свой компьютер
+```bash
+git clone git@github.com:Xenia387/api_final_yatube.git
+```
+
+```
+cd api_final_yatube
+```
+
+- Установите и активируйте виртуальное окружение
+
+```
+python3 -m venv env
+```
+
+```
+source env/bin/activate
+```
+
+  или
+
+```
+python -m venv env
+```
+
+```
+source venv/Scripts/activate
+```
+
+- Установите зависимости из файла requirements.txt
+
+```
+python -m pip install --upgrade pip
+```
+
+```bash
+pip install -r requirements.txt
+```
+
+Автор: Анисимова Ксения
+- email: anis.xenia@yandex.ru
+- telegram: @Ksenia_An_mova
