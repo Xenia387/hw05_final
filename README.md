@@ -48,7 +48,7 @@ python3 -m venv env
 ```
 
 ```
-source env/bin/activate
+source venv/bin/activate
 ```
 
   или
@@ -67,8 +67,22 @@ source venv/Scripts/activate
 python -m pip install --upgrade pip
 ```
 
-```bash
+```
 pip install -r requirements.txt
+```
+
+- Выполните миграции
+
+```
+cd yatube
+```
+
+```
+python manage.py makemigrations
+```
+
+```bash
+python manage.py migrate
 ```
 
 Автор: Анисимова Ксения
