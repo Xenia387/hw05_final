@@ -34,11 +34,11 @@ Yatube - это социальная сеть для публикации пос
 
 - Клонируйте репозиторий с проектом на свой компьютер
 ```bash
-git clone git@github.com:Xenia387/api_final_yatube.git
+git clone git@github.com:Xenia387/hw05_final.git
 ```
 
 ```
-cd api_final_yatube
+cd hw05_final
 ```
 
 - Установите и активируйте виртуальное окружение
