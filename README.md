@@ -20,6 +20,7 @@ Yatube - это социальная сеть для публикации пос
 
 # Технологии
 - Python
+- HTML/CSS
 - Django==3.2.16
 - pytest==6.2.4
 - pytest-pythonpath==0.7.3
@@ -27,7 +28,6 @@ Yatube - это социальная сеть для публикации пос
 - djangorestframework==3.12.4
 - djangorestframework-simplejwt==4.7.2
 - Pillow==9.3.0
-- PyJWT==2.1.0
 - requests==2.26.0
 
 # Запуск проекта
